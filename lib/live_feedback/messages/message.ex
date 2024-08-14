@@ -1,0 +1,22 @@
+defmodule LiveFeedback.Messages.Message do
+  use Ecto.Schema
+  import Ecto.Changeset
+
+  schema "messages" do
+    field :content, :string
+    field :is_anonymous, :boolean, default: false
+    field :anonymous_id, :string
+    field :is_answered, :boolean, default: false
+    field :user_id, :id
+    field :course_page_id, :id
+
+    timestamps(type: :utc_datetime)
+  end
+
+  @doc false
+  def changeset(message, attrs) do
+    message
+    |> cast(attrs, [:content, :is_anonymous, :anonymous_id, :is_answered])
+    |> validate_required([:content, :is_anonymous, :anonymous_id, :is_answered])
+  end
+end

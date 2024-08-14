@@ -1,0 +1,43 @@
+<.header>
+  Listing Course pages
+  <:actions>
+    <.link patch={~p"/course_pages/new"}>
+      <.button>New Course page</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="course_pages"
+  rows={@streams.course_pages}
+  row_click={fn {_id, course_page} -> JS.navigate(~p"/course_pages/#{course_page}") end}
+>
+  <:col :let={{_id, course_page}} label="Title"><%= course_page.title %></:col>
+  <:col :let={{_id, course_page}} label="Description"><%= course_page.description %></:col>
+  <:col :let={{_id, course_page}} label="Slug"><%= course_page.slug %></:col>
+  <:action :let={{_id, course_page}}>
+    <div class="sr-only">
+      <.link navigate={~p"/course_pages/#{course_page}"}>Show</.link>
+    </div>
+    <.link patch={~p"/course_pages/#{course_page}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, course_page}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: course_page.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="course_page-modal" show on_cancel={JS.patch(~p"/course_pages")}>
+  <.live_component
+    module={LiveFeedbackWeb.CoursePageLive.FormComponent}
+    id={@course_page.id || :new}
+    title={@page_title}
+    action={@live_action}
+    course_page={@course_page}
+    patch={~p"/course_pages"}
+  />
+</.modal>

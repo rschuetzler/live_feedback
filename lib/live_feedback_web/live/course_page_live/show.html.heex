@@ -1,0 +1,28 @@
+<.header>
+  Course page <%= @course_page.id %>
+  <:subtitle>This is a course_page record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/course_pages/#{@course_page}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit course_page</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Title"><%= @course_page.title %></:item>
+  <:item title="Description"><%= @course_page.description %></:item>
+  <:item title="Slug"><%= @course_page.slug %></:item>
+</.list>
+
+<.back navigate={~p"/course_pages"}>Back to course_pages</.back>
+
+<.modal :if={@live_action == :edit} id="course_page-modal" show on_cancel={JS.patch(~p"/course_pages/#{@course_page}")}>
+  <.live_component
+    module={LiveFeedbackWeb.CoursePageLive.FormComponent}
+    id={@course_page.id}
+    title={@page_title}
+    action={@live_action}
+    course_page={@course_page}
+    patch={~p"/course_pages/#{@course_page}"}
+  />
+</.modal>
