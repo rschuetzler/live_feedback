@@ -7,6 +7,7 @@ defmodule LiveFeedback.Messages do
   alias LiveFeedback.Repo
 
   alias LiveFeedback.Messages.Message
+  alias LiveFeedback.Courses.CoursePage
 
   @doc """
   Returns the list of messages.
@@ -100,5 +101,19 @@ defmodule LiveFeedback.Messages do
   """
   def change_message(%Message{} = message, attrs \\ %{}) do
     Message.changeset(message, attrs)
+  end
+
+  @doc """
+  Returns the list of messages for a course page.
+
+  ## Examples
+
+      iex> get_messages_for_course_page(%CoursePage{id: course_page_id})
+      [%Message{}, ...]
+
+  """
+  def get_messages_for_course_page_id(course_page_id) do
+    from(m in Message, where: m.course_page_id == ^course_page_id)
+    |> Repo.all()
   end
 end

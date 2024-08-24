@@ -1,0 +1,31 @@
+<.header>
+  Current Messages
+  <:actions>
+    <.link patch={~p"/page/#{@course_page.slug}/new"}>
+      <.button>New Message</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<ul>
+  <%= for message <- @messages do %>
+    <li><%= message.content %></li>
+  <% end %>
+</ul>
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="message-modal"
+  show
+  on_cancel={JS.patch(~p"/page/#{@course_page.slug}")}
+>
+  <.live_component
+    module={LiveFeedbackWeb.FeedbackLive.FormComponent}
+    id={@message.id || :new}
+    course_page={@course_page}
+    title={@page_title}
+    action={@live_action}
+    message={@message}
+    patch={~p"/page/#{@course_page.slug}"}
+  />
+</.modal>

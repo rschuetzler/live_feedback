@@ -16,7 +16,7 @@ defmodule LiveFeedback.Messages.Message do
   @doc false
   def changeset(message, attrs) do
     message
-    |> cast(attrs, [:content, :is_anonymous, :anonymous_id, :is_answered])
-    |> validate_required([:content, :is_anonymous, :anonymous_id, :is_answered])
+    |> cast(attrs, [:content, :is_anonymous, :anonymous_id, :is_answered, :course_page_id])
+    |> validate_required([:content, :course_page_id])
   end
 end

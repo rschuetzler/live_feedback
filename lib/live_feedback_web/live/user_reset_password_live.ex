@@ -5,7 +5,7 @@ defmodule LiveFeedbackWeb.UserResetPasswordLive do
 
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-sm">
+    <div class="max-w-sm mx-auto">
       <.header class="text-center">Reset Password</.header>
 
       <.simple_form
@@ -30,7 +30,7 @@ defmodule LiveFeedbackWeb.UserResetPasswordLive do
         </:actions>
       </.simple_form>
 
-      <p class="text-center text-sm mt-4">
+      <p class="mt-4 text-sm text-center">
         <.link href={~p"/users/register"}>Register</.link>
         | <.link href={~p"/users/log_in"}>Log in</.link>
       </p>

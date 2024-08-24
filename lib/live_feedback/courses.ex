@@ -101,4 +101,8 @@ defmodule LiveFeedback.Courses do
   def change_course_page(%CoursePage{} = course_page, attrs \\ %{}) do
     CoursePage.changeset(course_page, attrs)
   end
+
+  def get_course_page_by_slug!(slug) do
+    Repo.get_by(CoursePage, slug: slug)
+  end
 end
