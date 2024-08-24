@@ -70,6 +70,11 @@ defmodule LiveFeedbackWeb.Router do
       on_mount: [{LiveFeedbackWeb.UserAuth, :ensure_authenticated}] do
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
+      live "/course_pages", CoursePageLive, :index
+      live "/course_pages/new", CoursePageLive, :new
+      live "/course_pages/:id/edit", CoursePageLive, :edit
+      live "/course_pages/:id", CoursePageLive, :update
+      live "/course_pages/:id/delete", CoursePageLive, :delete
     end
   end
 
@@ -83,13 +88,6 @@ defmodule LiveFeedbackWeb.Router do
       live "/users/confirm/:token", UserConfirmationLive, :edit
       live "/users/confirm", UserConfirmationInstructionsLive, :new
     end
-
-    live "/course_pages", CoursePageLive, :index
-    live "/course_pages/new", CoursePageLive, :new
-    live "/course_pages", CoursePageLive, :create
-    live "/course_pages/:id/edit", CoursePageLive, :edit
-    live "/course_pages/:id", CoursePageLive, :update
-    live "/course_pages/:id/delete", CoursePageLive, :delete
 
     live_session :feedback,
       on_mount: [{LiveFeedbackWeb.UserAuth, :mount_current_user}] do
