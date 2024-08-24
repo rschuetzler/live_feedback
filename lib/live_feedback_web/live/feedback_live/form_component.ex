@@ -2,7 +2,6 @@ defmodule LiveFeedbackWeb.FeedbackLive.FormComponent do
   use LiveFeedbackWeb, :live_component
 
   alias LiveFeedback.Messages
-  import Phoenix.HTML.Form
 
   @impl true
   def render(assigns) do

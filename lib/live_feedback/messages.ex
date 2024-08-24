@@ -7,7 +7,6 @@ defmodule LiveFeedback.Messages do
   alias LiveFeedback.Repo
 
   alias LiveFeedback.Messages.Message
-  alias LiveFeedback.Courses.CoursePage
 
   @doc """
   Returns the list of messages.
@@ -54,6 +53,13 @@ defmodule LiveFeedback.Messages do
     %Message{}
     |> Message.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, message} ->
+        Phoenix.PubSub.broadcast(LiveFeedback.PubSub, "messages", {:new_message, message})
+        {:ok, message}
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 
   @doc """
@@ -115,5 +121,9 @@ defmodule LiveFeedback.Messages do
   def get_messages_for_course_page_id(course_page_id) do
     from(m in Message, where: m.course_page_id == ^course_page_id)
     |> Repo.all()
+  end
+
+  def subscribe do
+    Phoenix.PubSub.subscribe(LiveFeedback.PubSub, "messages")
   end
 end

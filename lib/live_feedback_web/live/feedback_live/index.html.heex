@@ -7,11 +7,11 @@
   </:actions>
 </.header>
 
-<ul>
-  <%= for message <- @messages do %>
-    <li><%= message.content %></li>
-  <% end %>
-</ul>
+<div id="messages" phx-update="stream">
+  <div :for={{id, message} <- @streams.messages} id={id}>
+    <%= message.content %>
+  </div>
+</div>
 
 <.modal
   :if={@live_action in [:new, :edit]}

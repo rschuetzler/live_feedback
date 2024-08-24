@@ -2,13 +2,21 @@ defmodule LiveFeedbackWeb.FeedbackLive.Index do
   use LiveFeedbackWeb, :live_view
 
   alias LiveFeedback.Messages
-  alias LiveFeedback.Courses.CoursePage
   alias LiveFeedback.Courses
   alias LiveFeedback.Messages.Message
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, stream(socket, :course_pages, Courses.list_course_pages())}
+  def mount(%{"coursepage" => coursepageid}, _session, socket) do
+    course_page = Courses.get_course_page_by_slug!(coursepageid)
+
+    if connected?(socket), do: Messages.subscribe()
+
+    {:ok,
+     stream(
+       socket,
+       :messages,
+       Messages.get_messages_for_course_page_id(course_page.id)
+     )}
   end
 
   @impl true
@@ -18,6 +26,7 @@ defmodule LiveFeedbackWeb.FeedbackLive.Index do
 
   defp apply_action(socket, :index, %{"coursepage" => coursepage}) do
     course_page = Courses.get_course_page_by_slug!(coursepage)
+
     socket
     |> assign(:page_title, "Live Feedback")
     |> assign(:course_page, course_page)
@@ -35,5 +44,24 @@ defmodule LiveFeedbackWeb.FeedbackLive.Index do
     |> assign(:page_title, "New Message")
     |> assign(:course_page, Courses.get_course_page_by_slug!(coursepage))
     |> assign(:message, %Message{})
+  end
+
+  @impl true
+  def handle_info({:new_message, message}, socket) do
+    if message.course_page_id == socket.assigns.course_page.id do
+      {:noreply, stream_insert(socket, :messages, message)}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  @impl true
+  def handle_info({LiveFeedbackWeb.FeedbackLive.FormComponent, {:saved, _message}}, socket) do
+    # if message.course_page_id == socket.assigns.course_page.id do
+    #   updated_messages = [message | socket.assigns.messages]
+    #   {:noreply, stream(socket, :messages, updated_messages)}
+    # else
+    {:noreply, socket}
+    # end
   end
 end
