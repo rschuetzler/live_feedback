@@ -8,7 +8,7 @@ defmodule LiveFeedback.Accounts.UserNotifier do
     email =
       new()
       |> to(recipient)
-      |> from({"LiveFeedback", "contact@example.com"})
+      |> from({"LiveFeedback", "chattrtech@gmail.com"})
       |> subject(subject)
       |> text_body(body)
 
