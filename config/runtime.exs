@@ -104,14 +104,8 @@ if config_env() == :prod do
   # are not using SMTP. Here is an example of the configuration:
   #
   config :live_feedback, LiveFeedback.Mailer,
-    adapter: Swoosh.Adapters.SMTP,
-    relay: "smtp.gmail.com",
-    username: System.get_env("SMTP_USERNAME"),
-    password: System.get_env("SMTP_PASSWORD"),
-    default_from: System.get_env("SMTP_FROM"),
-    tls: :always,
-    ssl: true,
-    port: 587
+    adapter: Swoosh.Adapters.Postmark,
+    api_key: System.get_env("POSTMARK_API_KEY")
 
   #
   # For this example you need include a HTTP client required by Swoosh API client.
