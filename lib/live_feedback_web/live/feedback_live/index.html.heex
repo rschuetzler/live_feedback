@@ -1,16 +1,17 @@
 <.header>
   Current Messages
   <:actions>
+    <%= if @current_user && @current_user.is_admin do %>
+      <.button phx-click="delete_all_messages" class="text-white bg-red-800">Delete All Messages</.button>
+    <% end %>
     <.link patch={~p"/page/#{@course_page.slug}/new"}>
       <.button>New Message</.button>
     </.link>
   </:actions>
 </.header>
 
-<div id="messages" phx-update="stream"
-class="mt-4">
-  <div :for={{id, message} <- @streams.messages} id={id}
-  class="p-4 mb-4 bg-gray-200 rounded-lg">
+<div id="messages" phx-update="stream" class="mt-4">
+  <div :for={{id, message} <- @streams.messages} id={id} class="p-4 mb-4 bg-gray-200 rounded-lg">
     <%= message.content %>
   </div>
 </div>

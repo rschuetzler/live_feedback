@@ -47,6 +47,16 @@ defmodule LiveFeedbackWeb.FeedbackLive.Index do
   end
 
   @impl true
+  def handle_event("delete_all_messages", _params, socket) do
+    if socket.assigns.current_user.is_admin do
+      Messages.delete_all_messages_for_course_page(socket.assigns.course_page)
+      {:noreply, stream(socket, :messages, [], reset: true)}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  @impl true
   def handle_info({:new_message, message}, socket) do
     if message.course_page_id == socket.assigns.course_page.id do
       {:noreply, stream_insert(socket, :messages, message)}
