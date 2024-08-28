@@ -6,17 +6,31 @@ defmodule LiveFeedbackWeb.FeedbackLive.Index do
   alias LiveFeedback.Messages.Message
 
   @impl true
-  def mount(%{"coursepage" => coursepageid}, _session, socket) do
+  def mount(%{"coursepage" => coursepageid}, session, socket) do
     course_page = Courses.get_course_page_by_slug!(coursepageid)
-
-    if connected?(socket), do: Messages.subscribe()
+    if connected?(socket), do: Messages.subscribe(course_page.id)
+    anonymous_id = get_or_create_anonymous_id(session)
+    IO.inspect(anonymous_id)
 
     {:ok,
-     stream(
-       socket,
+     socket
+     |> assign(:anonymous_id, anonymous_id)
+     |> stream(
        :messages,
        Messages.get_messages_for_course_page_id(course_page.id)
      )}
+  end
+
+  def get_or_create_anonymous_id(session) do
+    case Map.get(session, :anonymous_id) do
+      nil ->
+        anonymous_id = UUID.uuid4()
+        Map.put(session, :anonymous_id, anonymous_id)
+        anonymous_id
+
+      anonymous_id ->
+        anonymous_id
+    end
   end
 
   @impl true
@@ -57,12 +71,68 @@ defmodule LiveFeedbackWeb.FeedbackLive.Index do
   end
 
   @impl true
+  def handle_event("delete_message", %{"id" => id}, socket) do
+    message = Messages.get_message!(id)
+
+    if (socket.assigns.current_user && socket.assigns.current_user.is_admin) ||
+         message.anonymous_id == socket.assigns.anonymous_id do
+      Messages.delete_message(message)
+      {:noreply, stream_delete(socket, :messages, message)}
+    else
+      {:noreply, put_flash(socket, :error, "You are not authorized to delete this message.")}
+    end
+  end
+
+  @impl true
+  def handle_event("edit_message", %{"id" => id, "content" => content}, socket) do
+    message = Messages.get_message!(id)
+
+    if (socket.assigns.current_user && socket.assigns.current_user.is_admin) ||
+         message.anonymous_id == socket.assigns.anonymous_id do
+      Messages.update_message(id, %{"content" => content})
+      {:noreply, stream(socket, :messages, %{})}
+    else
+      {:noreply, put_flash(socket, :error, "You are not authorized to edit this message.")}
+    end
+  end
+
+  @impl true
+  def handle_event("edit_message", %{"id" => id}, socket) do
+    message = Messages.get_message!(id)
+
+    {:noreply, assign(socket, live_action: :edit, message: message)}
+  end
+
+  @impl true
   def handle_info({:new_message, message}, socket) do
     if message.course_page_id == socket.assigns.course_page.id do
       {:noreply, stream_insert(socket, :messages, message)}
     else
       {:noreply, socket}
     end
+  end
+
+  @impl true
+  def handle_info({:updated_message, message}, socket) do
+    if message.course_page_id == socket.assigns.course_page.id do
+      {:noreply, stream_insert(socket, :messages, message)}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  @impl true
+  def handle_info({:deleted_message, message}, socket) do
+    if message.course_page_id == socket.assigns.course_page.id do
+      {:noreply, stream_delete(socket, :messages, message)}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  @impl true
+  def handle_info({:deleted_all_messages, _course_page}, socket) do
+    {:noreply, stream(socket, :messages, [], reset: true)}
   end
 
   @impl true

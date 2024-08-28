@@ -15,6 +15,10 @@ defmodule LiveFeedbackWeb.Router do
     plug :fetch_current_user
   end
 
+  pipeline :assign_anonymous_id do
+    plug LiveFeedbackWeb.Plugs.AssignAnonymousId
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
   end
@@ -79,7 +83,7 @@ defmodule LiveFeedbackWeb.Router do
   end
 
   scope "/", LiveFeedbackWeb do
-    pipe_through [:browser]
+    pipe_through [:browser, :assign_anonymous_id]
 
     delete "/users/log_out", UserSessionController, :delete
 

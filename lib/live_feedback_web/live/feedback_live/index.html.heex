@@ -2,7 +2,9 @@
   Current Messages
   <:actions>
     <%= if @current_user && @current_user.is_admin do %>
-      <.button phx-click="delete_all_messages" class="text-white bg-red-800">Delete All Messages</.button>
+      <.button phx-click="delete_all_messages" class="text-white bg-red-800">
+        Delete All Messages
+      </.button>
     <% end %>
     <.link patch={~p"/page/#{@course_page.slug}/new"}>
       <.button>New Message</.button>
@@ -13,6 +15,14 @@
 <div id="messages" phx-update="stream" class="mt-4">
   <div :for={{id, message} <- @streams.messages} id={id} class="p-4 mb-4 bg-gray-200 rounded-lg">
     <%= message.content %>
+    <%= if @current_user && @current_user.is_admin || @anonymous_id == message.anonymous_id do %>
+      <div class="flex justify-end mt-2">
+        <button phx-click="edit_message" phx-value-id={message.id} class="text-blue-500">Edit</button>
+        <button phx-click="delete_message" phx-value-id={message.id} class="ml-2 text-red-500">
+          Delete
+        </button>
+      </div>
+    <% end %>
   </div>
 </div>
 
@@ -29,6 +39,7 @@
     title={@page_title}
     action={@live_action}
     message={@message}
+    anonymous_id={@anonymous_id}
     patch={~p"/page/#{@course_page.slug}"}
   />
 </.modal>

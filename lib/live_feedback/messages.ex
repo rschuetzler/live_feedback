@@ -56,7 +56,8 @@ defmodule LiveFeedback.Messages do
     |> Repo.insert()
     |> case do
       {:ok, message} ->
-        Phoenix.PubSub.broadcast(LiveFeedback.PubSub, "messages", {:new_message, message})
+        topic = "messages:#{message.course_page_id}"
+        Phoenix.PubSub.broadcast(LiveFeedback.PubSub, topic, {:new_message, message})
         {:ok, message}
 
       {:error, changeset} ->
@@ -80,6 +81,15 @@ defmodule LiveFeedback.Messages do
     message
     |> Message.changeset(attrs)
     |> Repo.update()
+    |> case do
+      {:ok, message} ->
+        topic = "messages:#{message.course_page_id}"
+        Phoenix.PubSub.broadcast(LiveFeedback.PubSub, topic, {:updated_message, message})
+        {:ok, message}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 
   @doc """
@@ -96,6 +106,15 @@ defmodule LiveFeedback.Messages do
   """
   def delete_message(%Message{} = message) do
     Repo.delete(message)
+    |> case do
+      {:ok, message} ->
+        topic = "messages:#{message.course_page_id}"
+        Phoenix.PubSub.broadcast(LiveFeedback.PubSub, topic, {:deleted_message, message})
+        {:ok, message}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 
   @doc """
@@ -121,16 +140,26 @@ defmodule LiveFeedback.Messages do
 
   """
   def get_messages_for_course_page_id(course_page_id) do
-    from(m in Message, where: m.course_page_id == ^course_page_id)
+    from(m in Message, where: m.course_page_id == ^course_page_id, order_by: [asc: m.inserted_at])
     |> Repo.all()
   end
 
   def delete_all_messages_for_course_page(%CoursePage{id: course_page_id}) do
     from(m in Message, where: m.course_page_id == ^course_page_id)
     |> Repo.delete_all()
+    |> case do
+      {_, nil} ->
+        topic = "messages:#{course_page_id}"
+        Phoenix.PubSub.broadcast(LiveFeedback.PubSub, topic, {:deleted_all_messages, course_page_id})
+        {:ok}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 
-  def subscribe do
-    Phoenix.PubSub.subscribe(LiveFeedback.PubSub, "messages")
+  def subscribe(course_page_id) do
+    topic = "messages:#{course_page_id}"
+    Phoenix.PubSub.subscribe(LiveFeedback.PubSub, topic)
   end
 end
