@@ -1,4 +1,6 @@
 <.header>
+  <h1 class="text-2xl font-bold">Ask a question <.icon name="hero-arrow-long-right" /></h1>
+
   <:actions>
     <%= if @current_user && @current_user.is_admin do %>
       <.button phx-click="delete_all_messages" class="text-white bg-red-800">

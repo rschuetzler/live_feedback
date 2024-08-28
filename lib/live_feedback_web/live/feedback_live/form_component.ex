@@ -22,7 +22,7 @@ defmodule LiveFeedbackWeb.FeedbackLive.FormComponent do
         <.input field={@form[:content]} type="text" label="Content" />
         <input type="hidden" name="message[course_page_id]" value={@course_page.id} />
         <:actions>
-          <.button phx-disable-with="Saving...">Save Message</.button>
+          <.button phx-disable-with="Saving...">Post Message</.button>
         </:actions>
       </.simple_form>
     </div>
@@ -69,8 +69,6 @@ defmodule LiveFeedbackWeb.FeedbackLive.FormComponent do
   end
 
   defp save_message(socket, :new, message_params) do
-    IO.inspect(message_params)
-
     case Messages.create_message(message_params) do
       {:ok, message} ->
         notify_parent({:saved, message})
