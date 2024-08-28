@@ -21,7 +21,7 @@
     class="relative p-4 mb-4 bg-gray-200 rounded-lg"
   >
     <div class="max-w-[90%]">
-      <%= message.content %>
+      <p class="text-lg"><%= message.content %></p>
     </div>
     <%= if @current_user && @current_user.is_admin || @anonymous_id == message.anonymous_id do %>
       <div class="absolute top-0 right-0 flex mt-2 mr-2 space-x-2">
