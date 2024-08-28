@@ -1,5 +1,4 @@
 <.header>
-  Current Messages
   <:actions>
     <%= if @current_user && @current_user.is_admin do %>
       <.button phx-click="delete_all_messages" class="text-white bg-red-800">
@@ -10,6 +9,7 @@
       <.button>New Message</.button>
     </.link>
   </:actions>
+  <div class="absolute top-0 right-0 hidden mt-32 mr-32 lg:block"><%= raw(@qr_code_svg) %></div>
 </.header>
 
 <div id="messages" phx-update="stream" class="mt-4">

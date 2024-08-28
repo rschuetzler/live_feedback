@@ -4,13 +4,13 @@ defmodule LiveFeedbackWeb.FeedbackLive.Index do
   alias LiveFeedback.Messages
   alias LiveFeedback.Courses
   alias LiveFeedback.Messages.Message
+  alias QRCode
 
   @impl true
   def mount(%{"coursepage" => coursepageid}, session, socket) do
     course_page = Courses.get_course_page_by_slug!(coursepageid)
     if connected?(socket), do: Messages.subscribe(course_page.id)
     anonymous_id = get_or_create_anonymous_id(session)
-    IO.inspect(anonymous_id)
 
     {:ok,
      socket
@@ -34,8 +34,15 @@ defmodule LiveFeedbackWeb.FeedbackLive.Index do
   end
 
   @impl true
-  def handle_params(params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  def handle_params(params, url, socket) do
+    {:ok, qr_code_svg} =
+      QRCode.create(url)
+      |> QRCode.render()
+
+    {:noreply,
+     socket
+     |> assign(:qr_code_svg, qr_code_svg)
+     |> apply_action(socket.assigns.live_action, params)}
   end
 
   defp apply_action(socket, :index, %{"coursepage" => coursepage}) do
