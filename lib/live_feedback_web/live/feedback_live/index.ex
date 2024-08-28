@@ -10,7 +10,7 @@ defmodule LiveFeedbackWeb.FeedbackLive.Index do
   def mount(%{"coursepage" => coursepageid}, session, socket) do
     course_page = Courses.get_course_page_by_slug!(coursepageid)
     if connected?(socket), do: Messages.subscribe(course_page.id)
-    anonymous_id = get_or_create_anonymous_id(session)
+    anonymous_id = get_anonymous_id(session)
 
     {:ok,
      socket
@@ -21,16 +21,8 @@ defmodule LiveFeedbackWeb.FeedbackLive.Index do
      )}
   end
 
-  def get_or_create_anonymous_id(session) do
-    case Map.get(session, :anonymous_id) do
-      nil ->
-        anonymous_id = UUID.uuid4()
-        Map.put(session, :anonymous_id, anonymous_id)
-        anonymous_id
-
-      anonymous_id ->
-        anonymous_id
-    end
+  def get_anonymous_id(session) do
+    Map.get(session, :anonymous_id)
   end
 
   @impl true
