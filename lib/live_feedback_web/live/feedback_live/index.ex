@@ -22,7 +22,7 @@ defmodule LiveFeedbackWeb.FeedbackLive.Index do
   end
 
   def get_anonymous_id(session) do
-    Map.get(session, :anonymous_id)
+    Map.get(session, "anonymous_id")
   end
 
   @impl true
