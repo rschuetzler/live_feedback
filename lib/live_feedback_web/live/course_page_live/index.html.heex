@@ -10,7 +10,7 @@
 <.table
   id="course_pages"
   rows={@streams.course_pages}
-  row_click={fn {_id, course_page} -> JS.navigate(~p"/course_pages/#{course_page}") end}
+  row_click={fn {_id, course_page} -> JS.navigate(~p"/page/#{course_page.slug}") end}
 >
   <:col :let={{_id, course_page}} label="Title"><%= course_page.title %></:col>
   <:col :let={{_id, course_page}} label="Description"><%= course_page.description %></:col>
@@ -31,7 +31,12 @@
   </:action>
 </.table>
 
-<.modal :if={@live_action in [:new, :edit]} id="course_page-modal" show on_cancel={JS.patch(~p"/course_pages")}>
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="course_page-modal"
+  show
+  on_cancel={JS.patch(~p"/course_pages")}
+>
   <.live_component
     module={LiveFeedbackWeb.CoursePageLive.FormComponent}
     id={@course_page.id || :new}

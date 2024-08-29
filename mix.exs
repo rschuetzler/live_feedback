@@ -61,7 +61,8 @@ defmodule LiveFeedback.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:uuid, "~> 1.1"},
-      {:qr_code, "~> 3.0.0"}
+      {:qr_code, "~> 3.0.0"},
+      {:bodyguard, "~> 2.4"}
     ]
   end
 
