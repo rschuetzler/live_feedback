@@ -19,7 +19,7 @@ defmodule LiveFeedbackWeb.FeedbackLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:content]} type="text" label="Content" />
+        <.input field={@form[:content]} type="text" label="Enter your message" />
         <input type="hidden" name="message[course_page_id]" value={@course_page.id} />
         <:actions>
           <.button phx-disable-with="Saving...">Post Message</.button>
