@@ -3,11 +3,24 @@ defmodule LiveFeedback.Messages do
   The Messages context.
   """
 
+  @behaviour Bodyguard.Policy
+
   import Ecto.Query, warn: false
   alias LiveFeedback.Repo
 
   alias LiveFeedback.Messages.Message
   alias LiveFeedback.Courses.CoursePage
+
+  # Admins can update any message
+  def authorize(:update_message, %{role: :admin} = _user, _message), do: :ok
+  # Can change your own messages
+  def authorize(:update_message, %{id: user_id} = _user, %{user_id: user_id} = _message), do: :ok
+  def authorize(:update_message, _user, _message), do: :error
+
+  # Delete messages permissions
+  def authorize(:delete_message, %{role: :admin} = _user, _message), do: :ok
+  def authorize(:delete_message, %{id: user_id} = _user, %{user_id: user_id} = _message), do: :ok
+  def authorize(:delete_message, _user, _message), do: :error
 
   @doc """
   Returns the list of messages.
@@ -150,7 +163,13 @@ defmodule LiveFeedback.Messages do
     |> case do
       {_, nil} ->
         topic = "messages:#{course_page_id}"
-        Phoenix.PubSub.broadcast(LiveFeedback.PubSub, topic, {:deleted_all_messages, course_page_id})
+
+        Phoenix.PubSub.broadcast(
+          LiveFeedback.PubSub,
+          topic,
+          {:deleted_all_messages, course_page_id}
+        )
+
         {:ok}
 
       {:error, changeset} ->
