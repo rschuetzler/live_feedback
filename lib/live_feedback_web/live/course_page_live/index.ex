@@ -25,19 +25,19 @@ defmodule LiveFeedbackWeb.CoursePageLive.Index do
 
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
-    |> assign(:page_title, "Edit Course page")
+    |> assign(:page_title, "Edit Feedback page")
     |> assign(:course_page, Courses.get_course_page!(id))
   end
 
   defp apply_action(socket, :new, _params) do
     socket
-    |> assign(:page_title, "New Course page")
+    |> assign(:page_title, "New Feedback page")
     |> assign(:course_page, %CoursePage{})
   end
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Listing Course pages")
+    |> assign(:page_title, "Listing Feedback pages")
     |> assign(:course_page, nil)
   end
 

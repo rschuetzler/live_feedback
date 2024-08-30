@@ -23,7 +23,7 @@ defmodule LiveFeedbackWeb.CoursePageLive.FormComponent do
         <.input field={@form[:description]} type="text" label="Description" />
         <.input field={@form[:slug]} type="text" label="Slug (this goes into the URL)" />
         <:actions>
-          <.button phx-disable-with="Saving...">Save Course page</.button>
+          <.button phx-disable-with="Saving...">Save Feedback page</.button>
         </:actions>
       </.simple_form>
     </div>
@@ -57,7 +57,7 @@ defmodule LiveFeedbackWeb.CoursePageLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Course page updated successfully")
+         |> put_flash(:info, "Feedback page updated successfully")
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -76,7 +76,7 @@ defmodule LiveFeedbackWeb.CoursePageLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Course page created successfully")
+         |> put_flash(:info, "Feedback page created successfully")
          |> push_patch(to: socket.assigns.patch)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
