@@ -1,5 +1,5 @@
 <.header>
-  Listing Course pages
+  My Course pages
   <:actions>
     <.link patch={~p"/course_pages/new"}>
       <.button>New Course page</.button>
@@ -43,6 +43,7 @@
     title={@page_title}
     action={@live_action}
     course_page={@course_page}
+    current_user={@current_user}
     patch={~p"/course_pages"}
   />
 </.modal>

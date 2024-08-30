@@ -9,7 +9,7 @@ defmodule LiveFeedbackWeb.CoursePageLive.FormComponent do
     <div>
       <.header>
         <%= @title %>
-        <:subtitle>Use this form to manage course_page records in your database.</:subtitle>
+        <:subtitle>Manage your feedback pages</:subtitle>
       </.header>
 
       <.simple_form
@@ -21,7 +21,7 @@ defmodule LiveFeedbackWeb.CoursePageLive.FormComponent do
       >
         <.input field={@form[:title]} type="text" label="Title" />
         <.input field={@form[:description]} type="text" label="Description" />
-        <.input field={@form[:slug]} type="text" label="Slug" />
+        <.input field={@form[:slug]} type="text" label="Slug (this goes into the URL)" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Course page</.button>
         </:actions>
@@ -66,6 +66,10 @@ defmodule LiveFeedbackWeb.CoursePageLive.FormComponent do
   end
 
   defp save_course_page(socket, :new, course_page_params) do
+    user = socket.assigns.current_user
+
+    course_page_params = Map.put_new(course_page_params, "user_id", user.id)
+
     case Courses.create_course_page(course_page_params) do
       {:ok, course_page} ->
         notify_parent({:saved, course_page})

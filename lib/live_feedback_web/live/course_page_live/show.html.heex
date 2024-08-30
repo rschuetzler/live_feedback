@@ -1,6 +1,6 @@
 <.header>
   Course page <%= @course_page.id %>
-  <:subtitle>This is a course_page record from your database.</:subtitle>
+  <:subtitle>This is a course page.</:subtitle>
   <:actions>
     <.link patch={~p"/course_pages/#{@course_page}/show/edit"} phx-click={JS.push_focus()}>
       <.button>Edit course_page</.button>

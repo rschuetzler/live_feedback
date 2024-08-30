@@ -14,7 +14,7 @@ defmodule LiveFeedback.Courses.CoursePage do
   @doc false
   def changeset(course_page, attrs) do
     course_page
-    |> cast(attrs, [:title, :description, :slug])
+    |> cast(attrs, [:title, :description, :slug, :user_id])
     |> validate_required([:title, :description, :slug])
     |> unique_constraint(:slug)
   end

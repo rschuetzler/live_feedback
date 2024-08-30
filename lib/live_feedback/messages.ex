@@ -3,11 +3,32 @@ defmodule LiveFeedback.Messages do
   The Messages context.
   """
 
+  @behaviour Bodyguard.Policy
+
   import Ecto.Query, warn: false
   alias LiveFeedback.Repo
 
   alias LiveFeedback.Messages.Message
   alias LiveFeedback.Courses.CoursePage
+
+  # Admins can update any message
+  def authorize(:update_message, %{role: :admin} = _user, _message), do: :ok
+  # Can change your own messages
+  def authorize(:update_message, %{id: user_id} = _user, %{user_id: user_id} = _message), do: :ok
+  def authorize(:update_message, _user, _message), do: :error
+
+  # Delete messages permissions
+  def authorize(:delete_message, %{role: :admin} = _user, _message), do: :ok
+  def authorize(:delete_message, %{id: user_id} = _user, %{user_id: user_id} = _message), do: :ok
+  # Can delete messages if you are the user that created the message's course_page
+  def authorize(
+        :delete_message,
+        %{id: user_id} = _user,
+        %{course_page: %{user_id: user_id}} = _message
+      ),
+      do: :ok
+
+  def authorize(:delete_message, _user, _message), do: :error
 
   @doc """
   Returns the list of messages.
@@ -141,7 +162,7 @@ defmodule LiveFeedback.Messages do
   """
   def get_messages_for_course_page_id(course_page_id) do
     from(m in Message, where: m.course_page_id == ^course_page_id, order_by: [asc: m.inserted_at])
-    |> Repo.all()
+    |> Repo.all(preload: [:course_page])
   end
 
   def delete_all_messages_for_course_page(%CoursePage{id: course_page_id}) do
@@ -150,7 +171,13 @@ defmodule LiveFeedback.Messages do
     |> case do
       {_, nil} ->
         topic = "messages:#{course_page_id}"
-        Phoenix.PubSub.broadcast(LiveFeedback.PubSub, topic, {:deleted_all_messages, course_page_id})
+
+        Phoenix.PubSub.broadcast(
+          LiveFeedback.PubSub,
+          topic,
+          {:deleted_all_messages, course_page_id}
+        )
+
         {:ok}
 
       {:error, changeset} ->
