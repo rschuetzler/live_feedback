@@ -8,6 +8,26 @@ defmodule LiveFeedback.Courses do
 
   alias LiveFeedback.Courses.CoursePage
 
+  @behaviour Bodyguard.Policy
+
+  # Delete course_pages permissions
+  def authorize(:delete_course_page, %{is_admin: true} = _user, _course_page), do: :ok
+
+  # Can delete course_pages if you are the user that created the course_page
+  def authorize(:delete_course_page, %{id: user_id} = _user, %{user_id: user_id} = _course_page),
+    do: :ok
+
+  def authorize(:delete_course_page, _user, _course_page), do: :error
+
+  # Change course_pages permissions
+  def authorize(:change_course_page, %{is_admin: true} = _user, _course_page), do: :ok
+
+  # Can change course_pages if you are the user that created the course_page
+  def authorize(:change_course_page, %{id: user_id} = _user, %{user_id: user_id} = _course_page),
+    do: :ok
+
+  def authorize(:change_course_page, _user, _course_page), do: :error
+
   @doc """
   Returns the list of course_pages.
 
