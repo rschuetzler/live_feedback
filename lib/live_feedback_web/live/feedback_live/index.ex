@@ -12,9 +12,18 @@ defmodule LiveFeedbackWeb.FeedbackLive.Index do
     if connected?(socket), do: Messages.subscribe(course_page.id)
     anonymous_id = get_anonymous_id(session)
 
+    page_admin =
+      if socket.assigns.current_user do
+        course_page.user_id == socket.assigns.current_user.id ||
+          socket.assigns.current_user.is_admin
+      else
+        false
+      end
+
     {:ok,
      socket
      |> assign(:anonymous_id, anonymous_id)
+     |> assign(:page_admin, page_admin)
      |> stream(
        :messages,
        Messages.get_messages_for_course_page_id(course_page.id)
@@ -61,7 +70,7 @@ defmodule LiveFeedbackWeb.FeedbackLive.Index do
 
   @impl true
   def handle_event("delete_all_messages", _params, socket) do
-    if socket.assigns.current_user.is_admin do
+    if socket.assigns.page_admin do
       Messages.delete_all_messages_for_course_page(socket.assigns.course_page)
       {:noreply, stream(socket, :messages, [], reset: true)}
     else
@@ -73,7 +82,7 @@ defmodule LiveFeedbackWeb.FeedbackLive.Index do
   def handle_event("delete_message", %{"id" => id}, socket) do
     message = Messages.get_message!(id)
 
-    if (socket.assigns.current_user && socket.assigns.current_user.is_admin) ||
+    if socket.assigns.page_admin ||
          message.anonymous_id == socket.assigns.anonymous_id do
       Messages.delete_message(message)
       {:noreply, stream_delete(socket, :messages, message)}
