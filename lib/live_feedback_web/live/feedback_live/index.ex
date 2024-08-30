@@ -24,6 +24,7 @@ defmodule LiveFeedbackWeb.FeedbackLive.Index do
      socket
      |> assign(:anonymous_id, anonymous_id)
      |> assign(:page_admin, page_admin)
+     |> assign(:course_page, course_page)
      |> stream(
        :messages,
        Messages.get_messages_for_course_page_id(course_page.id)
@@ -35,9 +36,9 @@ defmodule LiveFeedbackWeb.FeedbackLive.Index do
   end
 
   @impl true
-  def handle_params(params, url, socket) do
+  def handle_params(params, _url, socket) do
     {:ok, qr_code_svg} =
-      QRCode.create(url)
+      QRCode.create(~p"/page/#{socket.assigns.course_page.slug}")
       |> QRCode.render()
 
     {:noreply,
