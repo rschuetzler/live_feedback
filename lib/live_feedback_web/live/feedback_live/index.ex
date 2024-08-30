@@ -36,9 +36,12 @@ defmodule LiveFeedbackWeb.FeedbackLive.Index do
   end
 
   @impl true
-  def handle_params(params, _url, socket) do
+  def handle_params(params, url, socket) do
+    url =
+      URI.parse(url)
+
     {:ok, qr_code_svg} =
-      QRCode.create(~p"/page/#{socket.assigns.course_page.slug}")
+      QRCode.create("#{url.scheme}://#{url.authority}/page/#{socket.assigns.course_page.slug}")
       |> QRCode.render()
 
     {:noreply,
