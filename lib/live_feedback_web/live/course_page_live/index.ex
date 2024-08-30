@@ -6,7 +6,16 @@ defmodule LiveFeedbackWeb.CoursePageLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :course_pages, Courses.list_course_pages())}
+    if socket.assigns.current_user.is_admin do
+      {:ok, stream(socket, :course_pages, Courses.list_course_pages())}
+    else
+      {:ok,
+       stream(
+         socket,
+         :course_pages,
+         Courses.list_course_pages_by_user(socket.assigns.current_user.id)
+       )}
+    end
   end
 
   @impl true

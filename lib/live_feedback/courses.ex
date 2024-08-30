@@ -105,4 +105,8 @@ defmodule LiveFeedback.Courses do
   def get_course_page_by_slug!(slug) do
     Repo.get_by(CoursePage, slug: slug)
   end
+
+  def list_course_pages_by_user(user_id) do
+    Repo.all(from cp in CoursePage, where: cp.user_id == ^user_id)
+  end
 end
