@@ -11,6 +11,7 @@ kill_signal = 'SIGTERM'
 
 [deploy]
   release_command = '/app/bin/migrate'
+  strategy = 'canary'
 
 [env]
   PHX_HOST = 'live.chattr.io'
