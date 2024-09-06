@@ -36,6 +36,14 @@
           <.icon name="hero-trash" />
         </button>
       <% end %>
+      <%= if @course_page.allows_voting && @anonymous_id != message.anonymous_id do %>
+        <button phx-click="vote" phx-value-message_id={message.id}>Vote</button>
+        <%= if message.vote_count > 0 do %>
+          <div class="ml-2 text-gray-700">
+            Votes: <%= message.vote_count %>
+          </div>
+        <% end %>
+      <% end %>
     </div>
   </div>
 </div>

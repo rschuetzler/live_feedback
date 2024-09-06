@@ -7,6 +7,7 @@ defmodule LiveFeedback.Courses.CoursePage do
     field :title, :string
     field :slug, :string
     field :user_id, :id
+    field :allows_voting, :boolean, default: false
 
     timestamps(type: :utc_datetime)
   end
@@ -14,7 +15,7 @@ defmodule LiveFeedback.Courses.CoursePage do
   @doc false
   def changeset(course_page, attrs) do
     course_page
-    |> cast(attrs, [:title, :description, :slug, :user_id])
+    |> cast(attrs, [:title, :description, :slug, :user_id, :allows_voting])
     |> validate_required([:title, :description, :slug])
     |> unique_constraint(:slug)
   end

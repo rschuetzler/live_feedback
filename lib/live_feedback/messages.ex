@@ -8,7 +8,7 @@ defmodule LiveFeedback.Messages do
   import Ecto.Query, warn: false
   alias LiveFeedback.Repo
 
-  alias LiveFeedback.Messages.Message
+  alias LiveFeedback.Messages.{Message, Vote}
   alias LiveFeedback.Courses.CoursePage
 
   # Admins can update any message
@@ -188,5 +188,51 @@ defmodule LiveFeedback.Messages do
   def subscribe(course_page_id) do
     topic = "messages:#{course_page_id}"
     Phoenix.PubSub.subscribe(LiveFeedback.PubSub, topic)
+  end
+
+  def vote_message(message_id, %{user_id: user_id}) do
+    Repo.transaction(fn ->
+      message = Repo.get!(Message, message_id)
+
+      vote_attrs = %{
+        message_id: message_id,
+        user_id: user_id
+      }
+
+      changeset = Vote.changeset(%Vote{}, vote_attrs)
+
+      case Repo.insert(changeset) do
+        {:ok, _vote} ->
+          message
+          |> Ecto.Changeset.change(%{vote_count: message.vote_count + 1})
+          |> Repo.update()
+
+        {:error, _changeset} ->
+          {:error, :already_voted}
+      end
+    end)
+  end
+
+  def vote_message(message_id, %{anonymous_id: anonymous_id}) do
+    Repo.transaction(fn ->
+      message = Repo.get!(Message, message_id)
+
+      vote_attrs = %{
+        message_id: message_id,
+        anonymous_id: anonymous_id
+      }
+
+      changeset = Vote.changeset(%Vote{}, vote_attrs)
+
+      case Repo.insert(changeset) do
+        {:ok, _vote} ->
+          message
+          |> Ecto.Changeset.change(%{vote_count: message.vote_count + 1})
+          |> Repo.update()
+
+        {:error, _changeset} ->
+          {:error, :already_voted}
+      end
+    end)
   end
 end

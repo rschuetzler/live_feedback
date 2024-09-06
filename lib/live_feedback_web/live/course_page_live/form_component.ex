@@ -22,6 +22,7 @@ defmodule LiveFeedbackWeb.CoursePageLive.FormComponent do
         <.input field={@form[:title]} type="text" label="Title" />
         <.input field={@form[:description]} type="text" label="Description" />
         <.input field={@form[:slug]} type="text" label="Slug (this goes into the URL)" />
+        <.input field={@form[:allows_voting]} type="checkbox" label="Allow voting?" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Feedback page</.button>
         </:actions>

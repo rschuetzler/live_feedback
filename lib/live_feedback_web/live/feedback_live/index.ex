@@ -116,6 +116,24 @@ defmodule LiveFeedbackWeb.FeedbackLive.Index do
   end
 
   @impl true
+  def handle_event("vote", %{"message_id" => message_id}, socket) do
+    user_info =
+      if socket.assigns.current_user do
+        %{user_id: socket.assigns.current_user.id}
+      else
+        %{anonymous_id: socket.assigns.anonymous_id}
+      end
+
+    case Messages.vote_message(message_id, user_info) do
+      {:ok, _message} ->
+        {:noreply, socket}
+
+      {:error, :already_voted} ->
+        {:noreply, put_flash(socket, :error, "You have already voted for this message.")}
+    end
+  end
+
+  @impl true
   def handle_info({:new_message, message}, socket) do
     if message.course_page_id == socket.assigns.course_page.id do
       {:noreply, stream_insert(socket, :messages, message)}
