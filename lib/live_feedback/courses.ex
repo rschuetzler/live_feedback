@@ -7,6 +7,7 @@ defmodule LiveFeedback.Courses do
   alias LiveFeedback.Repo
 
   alias LiveFeedback.Courses.CoursePage
+  alias LiveFeedback.Messages.Vote
 
   @behaviour Bodyguard.Policy
 
@@ -128,5 +129,9 @@ defmodule LiveFeedback.Courses do
 
   def list_course_pages_by_user(user_id) do
     Repo.all(from cp in CoursePage, where: cp.user_id == ^user_id)
+  end
+
+  def get_user_votes_for_course_page(user_id, course_page_id) do
+    Repo.all(from v in Vote, where: v.user_id == ^user_id and v.course_page_id == ^course_page_id)
   end
 end
