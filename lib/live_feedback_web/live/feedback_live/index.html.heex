@@ -3,8 +3,8 @@
 
   <:actions>
     <%= if @page_admin do %>
-      <.button phx-click="delete_all_messages" class="text-white bg-red-800">
-        Delete All Messages
+      <.button phx-click="delete_all_messages" class="bg-red-600 hover:bg-red-600">
+        Clear the Page
       </.button>
     <% end %>
     <.link patch={~p"/page/#{@course_page.slug}/new"}>
