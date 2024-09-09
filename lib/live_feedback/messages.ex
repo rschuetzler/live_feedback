@@ -208,7 +208,7 @@ defmodule LiveFeedback.Messages do
           |> Repo.update()
 
         {:error, _changeset} ->
-          {:error, :already_voted}
+          Repo.rollback(:already_voted)
       end
     end)
   end
@@ -231,7 +231,7 @@ defmodule LiveFeedback.Messages do
           |> Repo.update()
 
         {:error, _changeset} ->
-          {:error, :already_voted}
+          Repo.rollback(:already_voted)
       end
     end)
   end
