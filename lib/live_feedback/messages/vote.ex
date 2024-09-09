@@ -3,8 +3,8 @@ defmodule LiveFeedback.Messages.Vote do
   import Ecto.Changeset
 
   schema "votes" do
-    field :message_id, :id
-    field :user_id, :id
+    field :message_id, :id, references: LiveFeedback.Messages.Message
+    field :user_id, :id, references: LiveFeedback.Accounts.User
     field :anonymous_id, :string
 
     timestamps(type: :utc_datetime)
