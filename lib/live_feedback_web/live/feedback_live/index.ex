@@ -12,6 +12,13 @@ defmodule LiveFeedbackWeb.FeedbackLive.Index do
     if connected?(socket), do: Messages.subscribe(course_page.id)
     anonymous_id = get_anonymous_id(session)
 
+    messages_with_votes =
+      if socket.assigns.current_user do
+        Courses.get_user_votes_for_course_page(course_page.id, socket.assigns.current_user.id)
+      else
+        Courses.get_user_votes_for_course_page(course_page.id, anonymous_id)
+      end
+
     page_admin =
       if socket.assigns.current_user do
         course_page.user_id == socket.assigns.current_user.id ||
@@ -25,6 +32,7 @@ defmodule LiveFeedbackWeb.FeedbackLive.Index do
      |> assign(:anonymous_id, anonymous_id)
      |> assign(:page_admin, page_admin)
      |> assign(:course_page, course_page)
+     |> stream(:messages_with_votes, messages_with_votes)
      |> stream(
        :messages,
        Messages.get_messages_for_course_page_id(course_page.id)

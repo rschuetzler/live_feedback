@@ -131,7 +131,20 @@ defmodule LiveFeedback.Courses do
     Repo.all(from cp in CoursePage, where: cp.user_id == ^user_id)
   end
 
-  def get_user_votes_for_course_page(user_id, course_page_id) do
-    Repo.all(from v in Vote, where: v.user_id == ^user_id and v.course_page_id == ^course_page_id)
+  def get_user_votes_for_course_page(course_page_id, anonymous_id, user_id \\ nil) do
+    query =
+      from v in Vote,
+        where: v.course_page_id == ^course_page_id and v.anonymous_id == ^anonymous_id,
+        select: v.message_id
+
+    query =
+      if user_id do
+        from v in query, or_where: v.user_id == ^user_id
+      else
+        query
+      end
+
+    Repo.all(query)
+    |> IO.inspect()
   end
 end
