@@ -7,7 +7,7 @@ defmodule LiveFeedback.Courses do
   alias LiveFeedback.Repo
 
   alias LiveFeedback.Courses.CoursePage
-  alias LiveFeedback.Messages.Vote
+  alias LiveFeedback.Messages.{Vote, Message}
 
   @behaviour Bodyguard.Policy
 
@@ -134,8 +134,11 @@ defmodule LiveFeedback.Courses do
   def get_user_votes_for_course_page(course_page_id, anonymous_id, user_id \\ nil) do
     query =
       from v in Vote,
-        where: v.course_page_id == ^course_page_id and v.anonymous_id == ^anonymous_id,
-        select: v.message_id
+        join: m in Message,
+        on: m.id == v.message_id,
+        where:
+          m.course_page_id == ^course_page_id and
+            v.anonymous_id == ^anonymous_id
 
     query =
       if user_id do
@@ -145,6 +148,5 @@ defmodule LiveFeedback.Courses do
       end
 
     Repo.all(query)
-    |> IO.inspect()
   end
 end
