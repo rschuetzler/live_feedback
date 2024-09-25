@@ -36,7 +36,7 @@ defmodule LiveFeedbackWeb.FeedbackLive.Index do
      |> assign(:anonymous_id, anonymous_id)
      |> assign(:page_admin, page_admin)
      |> assign(:course_page, course_page)
-     |> stream(:user_votes, user_votes)
+     |> assign(:user_votes, user_votes)
      |> stream(
        :messages,
        Messages.get_messages_for_course_page_id(course_page.id)
