@@ -502,7 +502,7 @@ defmodule LiveFeedbackWeb.CoreComponents do
               </div>
             </td>
             <td :if={@action != []} class="relative p-0">
-              <div class="flex justify-between py-4 text-sm font-medium text-right whitespace-nowrap">
+              <div class="flex flex-col sm:flex-row justify-between py-4 text-sm font-medium text-left whitespace-nowrap">
                 <span class="group-hover:bg-zinc-50 sm:rounded-r-xl" />
                 <span
                   :for={action <- @action}
